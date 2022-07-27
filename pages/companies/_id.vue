@@ -53,6 +53,7 @@
                           <label class="col-form-label">Company Name </label>
                           <span class="text-danger">*</span>
                           <input
+                            readonly
                             v-model="company_payload.name"
                             class="form-control"
                             type=""

@@ -175,7 +175,7 @@
             <v-col cols="6">
               <div class="text-right">
                 <v-btn
-                  v-if="can(`branch_create`)"
+                  v-if="can(`branch_create`) && (data.length < data.max_branches)"
                   small
                   color="primary"
                   class="mb-2"
@@ -243,7 +243,7 @@
             <v-col cols="6">
               <div class="text-right">
                 <v-btn
-                  v-if="can(`device_create`)"
+                  v-if="can(`device_create`) && (devices.length < company_payload.max_devices)"
                   small
                   color="primary"
                   class="mb-2"
@@ -387,7 +387,7 @@ export default {
         let mf = this.formatted_date(member_from);
         let exp = this.formatted_date(expiry);
 
-        this.company_payload = data.record;           
+        this.company_payload = data.record;
 
         this.company_payload.member_from = mf;
         this.company_payload.expiry = exp;

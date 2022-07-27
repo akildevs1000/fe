@@ -24,14 +24,14 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-select
+                <v-autocomplete
                   :rules="Rules"
                   v-model="company_id"
                   :items="companies"
                   item-value="id"
                   item-text="name"
                   label="Company*"
-                ></v-select>
+                ></v-autocomplete>
               </v-col>
 
               <v-col cols="12" v-for="(pa, idx) in modules" :key="pa.id">
