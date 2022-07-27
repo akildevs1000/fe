@@ -269,7 +269,7 @@
 
           <v-stepper-content step="3">
             <div class="row">
-              <div class="col-sm-6">
+              <!-- <div class="col-sm-6">
                 <div class="form-group">
                   <label class="col-form-label"></label>
                   Name <span class="text-danger">*</span>
@@ -284,7 +284,7 @@
                   class="text-danger mt-2"
                   >{{ errors.name[0] }}</span
                 >
-              </div>
+              </div> -->
               <div class="col-sm-6">
                 <div class="form-group">
                   <label class="col-form-label"></label>
@@ -387,7 +387,7 @@ export default {
       whatsapp: ""
     },
     login_payload: {
-      name: "",
+      name: "email_will_be_considered_as_user_name",
       email: "",
       password: "",
       password_confirmation: ""
