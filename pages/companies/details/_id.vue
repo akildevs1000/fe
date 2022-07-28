@@ -17,7 +17,7 @@
               </v-list-item-avatar>
               <v-list-item-content>
                 <div class="text-overline mb-1">
-                  Company Code : {{ company_payload.id }}
+                  Company Code : {{ company_payload.company_code }}
                 </div>
                 <v-list-item-title class="text-h5 mb-1">
                   {{ company_payload.name }}
