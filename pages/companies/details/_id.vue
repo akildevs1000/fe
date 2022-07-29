@@ -23,7 +23,7 @@
                   {{ company_payload.name }}
                 </v-list-item-title>
                 <v-list-item-subtitle>{{
-                  company_payload.location
+                  login_payload.email
                 }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -47,6 +47,15 @@
                   </v-col>
                   <v-col cols="8">
                     {{ company_payload.show_expiry }}
+                  </v-col>
+
+                  <v-col cols="3">
+                    <v-list-item-title class="text-h7 mb-1">
+                      Max Branches
+                    </v-list-item-title>
+                  </v-col>
+                  <v-col cols="8">
+                    {{ company_payload.max_branches }}
                   </v-col>
 
                   <v-col cols="3">
@@ -131,11 +140,29 @@
 
               <v-col cols="4">
                 <v-list-item-title class="text-h7 mb-1">
-                  User Email
+                  Lat
                 </v-list-item-title>
               </v-col>
               <v-col cols="8">
-                {{ login_payload.email }}
+                {{ company_payload.lon }}
+              </v-col>
+
+               <v-col cols="4">
+                <v-list-item-title class="text-h7 mb-1">
+                  Lon
+                </v-list-item-title>
+              </v-col>
+              <v-col cols="8">
+                {{ company_payload.lon }}
+              </v-col>
+
+               <v-col cols="4">
+                <v-list-item-title class="text-h7 mb-1">
+                  Location
+                </v-list-item-title>
+              </v-col>
+              <v-col cols="8">
+                {{ company_payload.location }}
               </v-col>
 
               <v-col cols="4">
@@ -175,11 +202,11 @@
             <v-col cols="6">
               <div class="text-right">
                 <v-btn
-                  v-if="can(`branch_create`) && (data.length < data.max_branches)"
+                  v-if="can(`branch_create`)"
                   small
                   color="primary"
                   class="mb-2"
-                  :to="`/branch/${$route.params.id}`"
+                  @click="createBranch"
                   >+ Add Branch</v-btn
                 >
               </div>
@@ -243,11 +270,11 @@
             <v-col cols="6">
               <div class="text-right">
                 <v-btn
-                  v-if="can(`device_create`) && (devices.length < company_payload.max_devices)"
+                  v-if="can(`device_create`)"
                   small
                   color="primary"
                   class="mb-2"
-                  :to="`/device/create/${$route.params.id}`"
+                  @click="createDevice"
                   >+ Add Device</v-btn
                 >
               </div>
@@ -281,7 +308,7 @@
 
                   <v-icon
                     v-if="can(`device_delete`)"
-                    @click="deleteItem(item)"
+                    @click="deleteDeviceItem(item)"
                     color="red"
                     small
                     >mdi-delete</v-icon
@@ -328,8 +355,11 @@ export default {
       location: "",
       member_from: "",
       expiry: "",
+      max_branches: "",
       max_employee: "",
-      max_devices: ""
+      max_devices: "",
+      lat: "",
+      lon: "",
     },
     contact_payload: {
       contact_name: "",
@@ -360,6 +390,22 @@ export default {
         (u && u.permissions.some(e => e.name == per || per == "/")) ||
         u.is_master
       );
+    },
+    createBranch(){
+      let { branches, max_branches} = this.company_payload;
+      if(branches.length >= max_branches){
+        alert(`You can create more than ${max_branches} branches`);
+        return;
+      }
+      this.$router.push(`/branch/${this.$route.params.id}`);
+    },
+    createDevice(){
+      let { max_devices } = this.company_payload;
+      if(this.devices.length >= max_devices){
+        alert(`You can create more than ${max_devices} devices`);
+        return;
+      }
+      this.$router.push(`/device/create/${this.$route.params.id}`);
     },
     getDataFromApi() {
       this.$axios
@@ -407,11 +453,11 @@ export default {
     editItem(item) {
       this.$router.push(item);
     },
-    deleteItem(item) {
+    deleteDeviceItem(item) {
       confirm("Are you sure you want to delete this item?") &&
-        this.$axios.delete("branch/" + item.id).then(res => {
-          const index = this.data.indexOf(item);
-          this.data.splice(index, 1);
+        this.$axios.delete("device/" + item.id).then(res => {
+          const index = this.devices.indexOf(item);
+          this.devices.splice(index, 1);
         });
     }
   },

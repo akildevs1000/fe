@@ -22,7 +22,7 @@
           <v-divider></v-divider>
 
           <v-stepper-step step="3">
-            Login Info
+            Geographic Info
           </v-stepper-step>
         </v-stepper-header>
 
@@ -46,28 +46,15 @@
 
               <div class="col-sm-6">
                 <div class="form-group">
-                  <label class="col-form-label">Company Logo</label>
-                  <br />
-                  <v-btn
-                    text
-                    small
-                    class="form-control primary"
-                    @click="onpick_attachment"
-                    >{{ !upload.name ? "Upload Logo" : "File Uploaded" }}
-                    <v-icon right dark>mdi-cloud-upload</v-icon></v-btn
-                  >
-
+                  <label class="col-form-label">Company Email</label>
+                  <span class="text-danger">*</span>
                   <input
-                    required
-                    type="file"
-                    @change="attachment"
-                    style="display: none"
-                    accept="image/*"
-                    ref="attachment_input"
+                    v-model="company_payload.email"
+                    class="form-control"
+                    type=""
                   />
-
-                  <span v-if="errors && errors.logo" class="text-danger mt-2">{{
-                    errors.logo[0]
+                  <span v-if="errors && errors.email" class="text-danger mt-2">{{
+                    errors.email[0]
                   }}</span>
                 </div>
               </div>
@@ -107,7 +94,38 @@
                   >
                 </div>
               </div>
-              <div class="col-sm-6">
+              <!-- <div class="col-sm-6">
+                <div class="form-group">
+
+                  <v-checkbox v-model="company_payload.no_branch" label="No Branch" class="ml-2"></v-checkbox>
+
+                  <span
+                    v-if="errors && errors.no_branch"
+                    class="text-danger mt-2"
+                    >{{ errors.no_branch[0] }}</span
+                  >
+                </div>
+              </div> -->
+
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label class="col-form-label"
+                    >Max Branches <span class="text-danger">*</span></label
+                  >
+                  <input
+                    v-model="company_payload.max_branches"
+                    type="number"
+                    class="form-control"
+                  />
+                  <span
+                    v-if="errors && errors.max_branches"
+                    class="text-danger mt-2"
+                    >{{ errors.max_branches[0] }}</span
+                  >
+                </div>
+              </div>
+
+              <div class="col-sm-4">
                 <div class="form-group">
                   <label class="col-form-label"
                     >Max Employees <span class="text-danger">*</span></label
@@ -125,7 +143,7 @@
                 </div>
               </div>
 
-              <div class="col-sm-6">
+              <div class="col-sm-4">
                 <div class="form-group">
                   <label class="col-form-label"
                     >Max Devices <span class="text-danger">*</span></label
@@ -144,22 +162,47 @@
               </div>
 
               <div class="col-sm-12">
-                <div class="form-group">
-                  <label class="col-form-label">Location </label>
-                  <span class="text-danger">*</span>
-                  <textarea
-                    v-model="company_payload.location"
-                    cols="30"
-                    rows="3"
-                    class="form-control"
-                  ></textarea>
-                  <span
-                    v-if="errors && errors.location"
-                    class="text-danger mt-2"
-                    >{{ errors.location[0] }}</span
-                  >
+                <div class="row">
+                  <div class="col-sm-3">
+                    <div class="form-group">
+                      <v-card class="ml-1 mr-1">
+                        <div class="pa-5">
+                          <v-img
+                            @click="onpick_attachment"
+                            style="width:150px; height:150px; margin:0 auto; border-radius:50%;"
+                            :src="
+                              previewImage ||
+                                company_payload.logo ||
+                                '/no-image.png'
+                            "
+                          ></v-img>
+                        </div>
+                        <v-btn style="width:100%;" @click="onpick_attachment"
+                          >{{ !upload.name ? "Upload Logo" : "File Uploaded" }}
+                          <v-icon right dark>mdi-cloud-upload</v-icon>
+                        </v-btn>
+                      </v-card>
+
+                      <input
+                        required
+                        type="file"
+                        @change="attachment"
+                        style="display: none"
+                        accept="image/*"
+                        ref="attachment_input"
+                      />
+
+                      <span
+                        v-if="errors && errors.logo"
+                        class="text-danger mt-2"
+                        >{{ errors.logo[0] }}</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
+
+
             </div>
             <v-row>
               <v-col cols="12">
@@ -190,11 +233,9 @@
                     class="form-control"
                     type="text"
                   />
-                  <span
-                    v-if="errors && errors.name"
-                    class="text-danger mt-2"
-                    >{{ errors.name[0] }}</span
-                  >
+                  <span v-if="errors && errors.name" class="text-danger mt-2">{{
+                    errors.name[0]
+                  }}</span>
                 </div>
               </div>
               <div class="col-sm-6">
@@ -269,69 +310,50 @@
 
           <v-stepper-content step="3">
             <div class="row">
-              <!-- <div class="col-sm-6">
-                <div class="form-group">
-                  <label class="col-form-label"></label>
-                  Name <span class="text-danger">*</span>
-                  <input
-                    v-model="login_payload.name"
-                    class="form-control"
-                    type=""
-                  />
-                </div>
-                <span
-                  v-if="errors && errors.name"
-                  class="text-danger mt-2"
-                  >{{ errors.name[0] }}</span
-                >
-              </div> -->
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label class="col-form-label"></label>
-                  Email <span class="text-danger">*</span>
-                  <input
-                    v-model="login_payload.email"
-                    class="form-control"
-                    type="email"
-                  />
-                </div>
-                <span v-if="errors && errors.email" class="text-danger mt-2">{{
-                  errors.email[0]
-                }}</span>
-              </div>
-            </div>
-            <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
                   <label class="col-form-label"
-                    >Password <span class="text-danger">*</span></label
+                    >Lat <span class="text-danger">*</span></label
                   >
                   <input
-                    v-model="login_payload.password"
+                    v-model="geographic_payload.lat"
+                    type="number"
                     class="form-control"
-                    type="password"
                   />
-                  <span
-                    v-if="errors && errors.password"
-                    class="text-danger mt-2"
-                    >{{ errors.password[0] }}</span
-                  >
+                  <span v-if="errors && errors.lat" class="text-danger mt-2">{{
+                    errors.lat[0]
+                  }}</span>
                 </div>
               </div>
+
               <div class="col-sm-6">
                 <div class="form-group">
                   <label class="col-form-label"
-                    >Confirm Password <span class="text-danger">*</span></label
+                    >Lon <span class="text-danger">*</span></label
                   >
                   <input
-                    v-model="login_payload.password_confirmation"
+                    v-model="geographic_payload.lon"
+                    type="number"
                     class="form-control"
-                    type="password"
                   />
+                  <span v-if="errors && errors.lon" class="text-danger mt-2">{{
+                    errors.lon[0]
+                  }}</span>
+                </div>
+              </div>
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label class="col-form-label">Location </label>
+                  <textarea
+                    v-model="geographic_payload.location"
+                    cols="30"
+                    rows="3"
+                    class="form-control"
+                  ></textarea>
                   <span
-                    v-if="errors && errors.password_confirmation"
+                    v-if="errors && errors.location"
                     class="text-danger mt-2"
-                    >{{ errors.password_confirmation[0] }}</span
+                    >{{ errors.location[0] }}</span
                   >
                 </div>
               </div>
@@ -347,7 +369,7 @@
                     small
                     :loading="loading"
                     color="primary"
-                    @click="validate_user"
+                    @click="validate_geographic_info"
                   >
                     Submit
                   </v-btn>
@@ -373,10 +395,12 @@ export default {
     },
     company_payload: {
       name: "",
+      email: "",
       logo: "",
-      location: "",
       member_from: "",
       expiry: "",
+      no_branch: "",
+      max_branches: "",
       max_employee: "",
       max_devices: ""
     },
@@ -386,14 +410,15 @@ export default {
       position: "",
       whatsapp: ""
     },
-    login_payload: {
-      name: "email_will_be_considered_as_user_name",
-      email: "",
-      password: "",
-      password_confirmation: ""
+    // location: "",
+    geographic_payload: {
+      location: "",
+      lat: "",
+      lon: ""
     },
     e1: 1,
-    errors: []
+    errors: [],
+    previewImage: null
   }),
   created() {
     this.preloader = false;
@@ -412,6 +437,17 @@ export default {
 
     attachment(e) {
       this.upload.name = e.target.files[0] || "";
+
+      let input = this.$refs.attachment_input;
+      let file = input.files;
+      if (file && file[0]) {
+        let reader = new FileReader();
+        reader.onload = e => {
+          this.previewImage = e.target.result;
+        };
+        reader.readAsDataURL(file[0]);
+        this.$emit("input", file[0]);
+      }
     },
     validate_company() {
       this.loading = true;
@@ -419,10 +455,11 @@ export default {
 
       let payload = new FormData();
       payload.append("name", this.company_payload.name);
+      payload.append("email", this.company_payload.email);
       payload.append("logo", this.upload.name);
-      payload.append("location", this.company_payload.location);
       payload.append("member_from", this.company_payload.member_from);
       payload.append("expiry", this.company_payload.expiry);
+      payload.append("max_branches", this.company_payload.max_branches);
       payload.append("max_employee", this.company_payload.max_employee);
       payload.append("max_devices", this.company_payload.max_devices);
 
@@ -456,12 +493,12 @@ export default {
         })
         .catch(e => console.log(e));
     },
-    validate_user() {
+    validate_geographic_info() {
       this.loading = true;
       this.errors = [];
 
       this.$axios
-        .post("company/user/validate", this.login_payload)
+        .post("company/user/validate", this.geographic_payload)
         .then(({ data }) => {
           this.loading = false;
 
@@ -482,9 +519,10 @@ export default {
       payload.append("logo", this.upload.name);
 
       payload.append("company_name", this.company_payload.name);
-      payload.append("location", this.company_payload.location);
+      payload.append("email", this.company_payload.email);
       payload.append("member_from", this.company_payload.member_from);
       payload.append("expiry", this.company_payload.expiry);
+      payload.append("max_branches", this.company_payload.max_branches);
       payload.append("max_employee", this.company_payload.max_employee);
       payload.append("max_devices", this.company_payload.max_devices);
 
@@ -493,12 +531,9 @@ export default {
       payload.append("position", this.contact_payload.position);
       payload.append("whatsapp", this.contact_payload.whatsapp);
 
-      payload.append("name", this.login_payload.name);
-      payload.append("email", this.login_payload.email);
-      payload.append("password", this.login_payload.password);
-      payload.append("password_confirmation", this.login_payload.password_confirmation);
-
-
+      payload.append("lat", this.geographic_payload.lat);
+      payload.append("lon", this.geographic_payload.lon);
+      payload.append("location", this.geographic_payload.location || "no location");
 
       this.$axios
         .post("/company", payload)

@@ -32,6 +32,29 @@
 
             <div class="col-sm-6">
               <div class="form-group">
+                <label class="col-form-label">Device Type </label>
+                <span class="text-danger">*</span>
+                <select
+
+                  v-model="payload.device_type"
+                  class="form-select pt-1 pb-1"
+                  aria-label="Default select"
+                >
+                  <option value="">Select Device Type</option>
+                  <option value="in">In</option>
+                  <option value="out">Out</option>
+                  <option value="auto">Auto</option>
+                </select>
+                <span
+                  v-if="errors && errors.device_type"
+                  class="text-danger mt-2"
+                  >{{ errors.device_type[0] }}</span
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
                 <label class="col-form-label">Device Id </label>
                 <span class="text-danger">*</span>
                 <input
@@ -43,6 +66,23 @@
                   v-if="errors && errors.device_id"
                   class="text-danger mt-2"
                   >{{ errors.device_id[0] }}</span
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="col-form-label">Device Model Number</label>
+                <!-- <span class="text-danger">*</span> -->
+                <input
+                  v-model="payload.model_number"
+                  class="form-control"
+                  type="text"
+                />
+                <span
+                  v-if="errors && errors.model_number"
+                  class="text-danger mt-2"
+                  >{{ errors.model_number[0] }}</span
                 >
               </div>
             </div>
@@ -144,7 +184,9 @@ export default {
 
     payload: {
       name: "",
+      device_type: "",
       device_id: "",
+      model_number: "",
       status_id: "",
       company_id: "",
       location: ""
@@ -181,6 +223,7 @@ export default {
     },
     store_device() {
       let id = this.$route.params.id;
+      let company_id = this.payload.company_id;
 
       delete this.payload.status;
       delete this.payload.company;
@@ -199,7 +242,7 @@ export default {
           } else {
             this.snackbar = true;
             this.response = "Device updated successfully";
-            setTimeout(() => this.$router.push("/device"), 2000);
+            setTimeout(() => this.$router.push(`/companies/details/${company_id}`), 2000);
           }
         })
         .catch(e => console.log(e));

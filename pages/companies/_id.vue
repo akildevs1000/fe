@@ -29,17 +29,17 @@
           <v-card>
             <v-tabs color="primary">
               <v-tab>
-                <v-icon left>
+                <v-icon>
                   mdi-domain
                 </v-icon>
               </v-tab>
               <v-tab>
-                <v-icon left>
+                <v-icon>
                   mdi-account
                 </v-icon>
               </v-tab>
               <v-tab>
-                <v-icon left>
+                <v-icon>
                   mdi-lock
                 </v-icon>
               </v-tab>
@@ -68,32 +68,18 @@
 
                       <div class="col-sm-6">
                         <div class="form-group">
-                          <label class="col-form-label">Company Logo</label>
-                          <br />
-
-                          <v-btn
-                            dark
-                            small
-                            class="form-control primary"
-                            @click="onpick_attachment"
-                            >{{
-                              !upload.name ? "Upload Logo" : "File Uploaded"
-                            }}
-                            <v-icon right dark>mdi-cloud-upload</v-icon></v-btn
-                          >
+                          <label class="col-form-label">Company Email</label>
+                          <span class="text-danger">*</span>
                           <input
-                            required
-                            type="file"
-                            @change="attachment"
-                            style="display: none"
-                            accept="image/*"
-                            ref="attachment_input"
+                            readonly
+                            v-model="login_payload.email"
+                            class="form-control"
+                            type=""
                           />
-
                           <span
-                            v-if="errors && errors.logo"
+                            v-if="errors && errors.email"
                             class="text-danger mt-2"
-                            >{{ errors.logo[0] }}</span
+                            >{{ errors.email[0] }}</span
                           >
                         </div>
                       </div>
@@ -134,7 +120,26 @@
                           >
                         </div>
                       </div>
-                      <div class="col-sm-6">
+                      <div class="col-sm-4">
+                        <div class="form-group">
+                          <label class="col-form-label"
+                            >Max Branches
+                            <span class="text-danger">*</span></label
+                          >
+                          <input
+                            v-model="company_payload.max_branches"
+                            type="number"
+                            class="form-control"
+                          />
+                          <span
+                            v-if="errors && errors.max_branches"
+                            class="text-danger mt-2"
+                            >{{ errors.max_branches[0] }}</span
+                          >
+                        </div>
+                      </div>
+
+                      <div class="col-sm-4">
                         <div class="form-group">
                           <label class="col-form-label"
                             >Max Employees
@@ -153,7 +158,7 @@
                         </div>
                       </div>
 
-                      <div class="col-sm-6">
+                      <div class="col-sm-4">
                         <div class="form-group">
                           <label class="col-form-label"
                             >Max Devices
@@ -172,21 +177,43 @@
                         </div>
                       </div>
 
-                      <div class="col-sm-12">
+                      <div class="col-sm-3">
                         <div class="form-group">
-                          <label class="col-form-label">Location </label>
-                          <span class="text-danger">*</span>
-                          <textarea
-                            v-model="company_payload.location"
-                            id=""
-                            cols="30"
-                            rows="3"
-                            class="form-control"
-                          ></textarea>
+                          <v-card class="ml-1 mr-1">
+                            <div class="pa-5">
+                              <v-img
+                                @click="onpick_attachment"
+                                style="width:150px; height:150px; margin:0 auto; border-radius:50%;"
+                                :src="
+                                  previewImage ||
+                                    company_payload.logo ||
+                                    '/no-image.png'
+                                "
+                              ></v-img>
+                            </div>
+                            <v-btn
+                              style="width:100%;"
+                              @click="onpick_attachment"
+                              >{{
+                                !upload.name ? "Upload Logo" : "Logo Uploaded"
+                              }}
+                              <v-icon right dark>mdi-cloud-upload</v-icon>
+                            </v-btn>
+                          </v-card>
+
+                          <input
+                            required
+                            type="file"
+                            @change="attachment"
+                            style="display: none"
+                            accept="image/*"
+                            ref="attachment_input"
+                          />
+
                           <span
-                            v-if="errors && errors.location"
+                            v-if="errors && errors.logo"
                             class="text-danger mt-2"
-                            >{{ errors.location[0] }}</span
+                            >{{ errors.logo[0] }}</span
                           >
                         </div>
                       </div>
@@ -325,22 +352,6 @@
                           >{{ errors.name[0] }}</span
                         >
                       </div> -->
-                      <div class="col-sm-6">
-                        <div class="form-group">
-                          <label class="col-form-label"></label>
-                          Email <span class="text-danger">*</span>
-                          <input
-                            v-model="login_payload.email"
-                            class="form-control"
-                            type="email"
-                          />
-                        </div>
-                        <span
-                          v-if="errors && errors.email"
-                          class="text-danger mt-2"
-                          >{{ errors.email[0] }}</span
-                        >
-                      </div>
                     </div>
                     <div class="row">
                       <div class="col-sm-6">
@@ -426,6 +437,7 @@ export default {
       location: "",
       member_from: "",
       expiry: "",
+      max_branches: "",
       max_employee: "",
       max_devices: ""
     },
@@ -436,11 +448,12 @@ export default {
       whatsapp: ""
     },
     login_payload: {
-      name: "",
-      email: ""
+      password: "",
+      password_confirmation: ""
     },
     e1: 1,
     errors: [],
+    previewImage: null,
     data: {},
     response: "",
     snackbar: false
@@ -470,7 +483,6 @@ export default {
         this.company_payload.expiry = exp;
 
         this.preloader = false;
-
       });
     },
 
@@ -484,10 +496,20 @@ export default {
 
     attachment(e) {
       this.upload.name = e.target.files[0] || "";
+
+      let input = this.$refs.attachment_input;
+      let file = input.files;
+      if (file && file[0]) {
+        let reader = new FileReader();
+        reader.onload = e => {
+          this.previewImage = e.target.result;
+        };
+        reader.readAsDataURL(file[0]);
+        this.$emit("input", file[0]);
+      }
     },
 
     update_company() {
-
       let payload = new FormData();
 
       payload.append("name", this.company_payload.name);
@@ -503,13 +525,21 @@ export default {
       this.start_process(`/company/${this.id}/update`, payload, `Company`);
     },
     update_contact() {
-      this.start_process(`/company/${this.id}/update/contact`, this.contact_payload, `Contact`);
+      this.start_process(
+        `/company/${this.id}/update/contact`,
+        this.contact_payload,
+        `Contact`
+      );
     },
     update_user() {
-      this.start_process(`/company/${this.id}/update/user`, this.login_payload, `User`);
+      this.start_process(
+        `/company/${this.id}/update/user`,
+        this.login_payload,
+        `User`
+      );
     },
     start_process(url, payload, model) {
-      this.loading = true;
+      // this.loading = true;
 
       this.$axios
         .post(url, payload)

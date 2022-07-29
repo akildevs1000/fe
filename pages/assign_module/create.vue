@@ -29,7 +29,7 @@
                   v-model="company_id"
                   :items="companies"
                   item-value="id"
-                  item-text="name"
+                  item-text="company_code"
                   label="Company*"
                 ></v-autocomplete>
               </v-col>

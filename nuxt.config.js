@@ -32,7 +32,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [{ src: '~/plugins/Permissions.js', mode: 'server' },],
-  
+
 
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -52,12 +52,12 @@ export default {
     '@nuxtjs/pwa',
     '@nuxtjs/auth-next',
     'nuxt-sweetalert2'
-    
+
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http://localhost:8000/api' 
+    baseURL: 'http://192.168.2.193:8000/api'
   },
   auth: {
     strategies: {
@@ -68,10 +68,10 @@ export default {
           user: { url: 'me', method: 'get', propertyName: 'user' }
         },
 		maxAge: 86400 // 24 hours
-       
+
       }
     },
-   
+
     redirect: {
       logout: '/login',
     }
@@ -117,6 +117,7 @@ export default {
   },
 
   server: {
-    port: 3000,
+    host: "192.168.2.193",
+    port: "3000"
   }
 }

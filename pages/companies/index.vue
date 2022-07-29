@@ -20,7 +20,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col xs="12" sm="12" md="3" cols="12">
+        <v-col md="3">
           <v-select
             @change="getDataFromApi(endpoint)"
             outlined
@@ -31,7 +31,7 @@
           ></v-select>
         </v-col>
 
-        <v-col xs="12" sm="12" md="3" offset-md="6" cols="12">
+        <v-col offset-md="6">
           <v-text-field
             outlined
             @input="searchIt"
@@ -43,10 +43,7 @@
       </v-row>
       <v-row v-if="can('company_view')">
         <v-col
-          xs="12"
-          sm="12"
           md="3"
-          cols="12"
           v-for="(item, index) in data"
           :key="index"
         >
@@ -170,7 +167,7 @@ export default {
       this.$axios.get(`${url}`, options).then(({ data }) => {
 
         let { total,next_page_url, prev_page_url, current_page } = data;
-        
+
         this.data = data.data;
         this.total = total;
         this.next_page_url = next_page_url;

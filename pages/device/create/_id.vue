@@ -32,6 +32,29 @@
 
             <div class="col-sm-6">
               <div class="form-group">
+                <label class="col-form-label">Device Type </label>
+                <span class="text-danger">*</span>
+                <select
+
+                  v-model="payload.device_type"
+                  class="form-select pt-1 pb-1"
+                  aria-label="Default select"
+                >
+                  <option value="">Select Device Type</option>
+                  <option value="in">In</option>
+                  <option value="out">Out</option>
+                  <option value="auto">Auto</option>
+                </select>
+                <span
+                  v-if="errors && errors.device_type"
+                  class="text-danger mt-2"
+                  >{{ errors.device_type[0] }}</span
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
                 <label class="col-form-label">Device Id </label>
                 <span class="text-danger">*</span>
                 <input
@@ -43,6 +66,23 @@
                   v-if="errors && errors.device_id"
                   class="text-danger mt-2"
                   >{{ errors.device_id[0] }}</span
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="col-form-label">Device Model Number</label>
+                <!-- <span class="text-danger">*</span> -->
+                <input
+                  v-model="payload.model_number"
+                  class="form-control"
+                  type="text"
+                />
+                <span
+                  v-if="errors && errors.model_number"
+                  class="text-danger mt-2"
+                  >{{ errors.model_number[0] }}</span
                 >
               </div>
             </div>
@@ -99,7 +139,6 @@
             <div class="col-sm-12">
               <div class="form-group">
                 <label class="col-form-label">Device Location </label>
-                <span class="text-danger">*</span>
                 <textarea
                   v-model="payload.location"
                   class="form-control"
@@ -144,7 +183,9 @@ export default {
 
     payload: {
       name: "",
+      device_type :"",
       device_id: "",
+      model_number: "",
       status_id: "",
       company_id: "",
       location: ""
@@ -189,7 +230,10 @@ export default {
             this.snackbar = true;
             this.response = "Device added successfully";
             setTimeout(
-              () => this.$router.push(`/companies/details/${this.payload.company_id}`),
+              () =>
+                this.$router.push(
+                  `/companies/details/${this.payload.company_id}`
+                ),
               2000
             );
           }
