@@ -38,6 +38,12 @@
                   mdi-account
                 </v-icon>
               </v-tab>
+
+              <v-tab>
+                <v-icon>
+                  mdi-earth
+                </v-icon>
+              </v-tab>
               <v-tab>
                 <v-icon>
                   mdi-lock
@@ -50,7 +56,7 @@
                     <div class="row">
                       <div class="col-sm-6">
                         <div class="form-group">
-                          <label class="col-form-label">Company Name </label>
+                          <label class="col-form-label">Company Name</label>
                           <span class="text-danger">*</span>
                           <input
                             readonly
@@ -72,7 +78,7 @@
                           <span class="text-danger">*</span>
                           <input
                             readonly
-                            v-model="login_payload.email"
+                            v-model="user_payload.email"
                             class="form-control"
                             type=""
                           />
@@ -88,7 +94,7 @@
                     <div class="row">
                       <div class="col-sm-6">
                         <div class="form-group">
-                          <label class="col-form-label">Member From </label>
+                          <label class="col-form-label">Member From</label>
                           <span class="text-danger">*</span>
                           <input
                             v-model="company_payload.member_from"
@@ -336,33 +342,88 @@
                 <v-card flat>
                   <v-card-text>
                     <div class="row">
-                      <!-- <div class="col-sm-6">
+                      <div class="col-sm-6">
                         <div class="form-group">
-                          <label class="col-form-label"></label>
-                          Name <span class="text-danger">*</span>
+                          <label class="col-form-label"
+                            >Lat <span class="text-danger">*</span></label
+                          >
                           <input
-                            v-model="login_payload.name"
+                            v-model="geographic_payload.lat"
+                            type="number"
                             class="form-control"
-                            type=""
                           />
+                          <span
+                            v-if="errors && errors.lat"
+                            class="text-danger mt-2"
+                            >{{ errors.lat[0] }}</span
+                          >
                         </div>
-                        <span
-                          v-if="errors && errors.name"
-                          class="text-danger mt-2"
-                          >{{ errors.name[0] }}</span
-                        >
-                      </div> -->
+                      </div>
+
+                      <div class="col-sm-6">
+                        <div class="form-group">
+                          <label class="col-form-label"
+                            >Lon <span class="text-danger">*</span></label
+                          >
+                          <input
+                            v-model="geographic_payload.lon"
+                            type="number"
+                            class="form-control"
+                          />
+                          <span
+                            v-if="errors && errors.lon"
+                            class="text-danger mt-2"
+                            >{{ errors.lon[0] }}</span
+                          >
+                        </div>
+                      </div>
+
+                      <div class="col-sm-12">
+                        <div class="form-group">
+                          <label class="col-form-label">Location </label>
+                          <textarea
+                            v-model="geographic_payload.location"
+                            cols="30"
+                            rows="3"
+                            class="form-control"
+                          ></textarea>
+                          <span
+                            v-if="errors && errors.location"
+                            class="text-danger mt-2"
+                            >{{ errors.location[0] }}</span
+                          >
+                        </div>
+                      </div>
                     </div>
+                    <v-row>
+                      <v-col cols="12">
+                        <div class="text-right">
+                          <v-btn
+                            v-if="can('company_edit')"
+                            small
+                            :loading="loading"
+                            color="primary"
+                            @click="update_geographic"
+                          >
+                            Submit
+                          </v-btn>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card flat>
+                  <v-card-text>
                     <div class="row">
                       <div class="col-sm-6">
                         <div class="form-group">
                           <label class="col-form-label"
-                            >Password (<small class="text-danger"
-                              >leave empty if no change</small
-                            >)</label
+                            >Password</label
                           >
                           <input
-                            v-model="login_payload.password"
+                            v-model="user_payload.password"
                             class="form-control"
                             type="password"
                           />
@@ -376,12 +437,10 @@
                       <div class="col-sm-6">
                         <div class="form-group">
                           <label class="col-form-label"
-                            >Confirm Password (<small class="text-danger"
-                              >leave empty if no change</small
-                            >)
+                            >Confirm Password
                           </label>
                           <input
-                            v-model="login_payload.password_confirmation"
+                            v-model="user_payload.password_confirmation"
                             class="form-control"
                             type="password"
                           />
@@ -434,7 +493,6 @@ export default {
     company_payload: {
       name: "",
       logo: "",
-      location: "",
       member_from: "",
       expiry: "",
       max_branches: "",
@@ -447,9 +505,14 @@ export default {
       position: "",
       whatsapp: ""
     },
-    login_payload: {
+    user_payload: {
       password: "",
       password_confirmation: ""
+    },
+    geographic_payload: {
+      lat: "",
+      lon: "",
+      location: ""
     },
     e1: 1,
     errors: [],
@@ -475,13 +538,18 @@ export default {
         let r = data.record;
         this.company_payload = r;
         this.contact_payload = r.contact;
-        this.login_payload = r.user;
+        this.user_payload = r.user;
 
         let mf = this.formatted_date(r.member_from);
         let exp = this.formatted_date(r.expiry);
         this.company_payload.member_from = mf;
         this.company_payload.expiry = exp;
 
+        this.geographic_payload = {
+          lat : this.company_payload.lat,
+          lon : this.company_payload.lon,
+          location : this.company_payload.location,
+        }
         this.preloader = false;
       });
     },
@@ -520,6 +588,7 @@ export default {
       payload.append("member_from", this.company_payload.member_from);
       payload.append("expiry", this.company_payload.expiry);
       payload.append("max_employee", this.company_payload.max_employee);
+      payload.append("max_branches", this.company_payload.max_branches);
       payload.append("max_devices", this.company_payload.max_devices);
 
       this.start_process(`/company/${this.id}/update`, payload, `Company`);
@@ -531,15 +600,22 @@ export default {
         `Contact`
       );
     },
+    update_geographic() {
+      this.start_process(
+        `/company/${this.id}/update/geographic`,
+        this.geographic_payload,
+        `Geographic Info`
+      );
+    },
     update_user() {
       this.start_process(
         `/company/${this.id}/update/user`,
-        this.login_payload,
+        this.user_payload,
         `User`
       );
     },
     start_process(url, payload, model) {
-      // this.loading = true;
+      this.loading = true;
 
       this.$axios
         .post(url, payload)
