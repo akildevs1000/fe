@@ -27,7 +27,7 @@
       <v-row>
         <v-col>
           <v-card>
-            <v-tabs color="primary">
+            <v-tabs color="primary" :vertical="vertical">
               <v-tab>
                 <v-icon>
                   mdi-domain
@@ -54,7 +54,20 @@
                 <v-card flat>
                   <v-card-text>
                     <div class="row">
-                      <div class="col-sm-6">
+                      <div class="col-sm-4">
+                        <div class="form-group">
+                          <label class="col-form-label">Company Code</label>
+                          <span class="text-danger">*</span>
+                          <input
+                            readonly
+                            v-model="company_payload.company_code"
+                            class="form-control"
+                            type=""
+                          />
+                        </div>
+                      </div>
+
+                      <div class="col-sm-4">
                         <div class="form-group">
                           <label class="col-form-label">Company Name</label>
                           <span class="text-danger">*</span>
@@ -72,7 +85,7 @@
                         </div>
                       </div>
 
-                      <div class="col-sm-6">
+                      <div class="col-sm-4">
                         <div class="form-group">
                           <label class="col-form-label">Company Email</label>
                           <span class="text-danger">*</span>
@@ -419,9 +432,7 @@
                     <div class="row">
                       <div class="col-sm-6">
                         <div class="form-group">
-                          <label class="col-form-label"
-                            >Password</label
-                          >
+                          <label class="col-form-label">Password</label>
                           <input
                             v-model="user_payload.password"
                             class="form-control"
@@ -483,6 +494,7 @@
 <script>
 export default {
   data: () => ({
+    vertical: false,
     id: "",
     loading: false,
     preloader: true,
@@ -546,10 +558,10 @@ export default {
         this.company_payload.expiry = exp;
 
         this.geographic_payload = {
-          lat : this.company_payload.lat,
-          lon : this.company_payload.lon,
-          location : this.company_payload.location,
-        }
+          lat: this.company_payload.lat,
+          lon: this.company_payload.lon,
+          location: this.company_payload.location
+        };
         this.preloader = false;
       });
     },
